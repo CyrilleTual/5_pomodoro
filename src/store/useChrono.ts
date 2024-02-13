@@ -22,8 +22,8 @@ const initialState: Partial<State> = {
 
 //////  set du store //////
 export const useChrono = create((set, get) => ({
-  ...initialState,
 
+  ...initialState,
   // manage the chrono values increase or decrease
   updateChronoValues: (type: "session" | "pause", sign: "+" | "-") => {
     set((state: any) => {
@@ -72,7 +72,7 @@ export const useChrono = create((set, get) => ({
   ////  startChrono : () => void;
   startChrono: () => {
     const isRunning = (get() as any).isPlaying;
- 
+
     if (!isRunning) {
       const intervalId = setInterval(() => {
         set((state: State) => ({
@@ -85,7 +85,7 @@ export const useChrono = create((set, get) => ({
         if ((get() as any).displayedValue.value === 0) {
           clearInterval(intervalId);
           const state = get() as State;
-         
+
           set((state: State) => ({
             cycles: state.cycles + 1,
             isPlaying: false,
@@ -115,18 +115,16 @@ export const useChrono = create((set, get) => ({
           value: +state.displayedValue.value - 1,
           heading: "paused",
         },
-       isPaused: true,
+        isPaused: true,
       }));
-       const state = get() as State;
- 
+      const state = get() as State;
 
-      /// fin de la pause 
+      /// fin de la pause
       if ((get() as any).displayedValue.value === 0) {
         clearInterval(intervalId);
         const state = get() as State;
-      
+
         set((state: State) => ({
-           
           isPlaying: false,
           displayedValue: {
             value: state.session.value,
@@ -148,20 +146,18 @@ export const useChrono = create((set, get) => ({
   },
 
   resetChrono: () => {
-    const state = get() as State;
-    const intervalId = state.intervalId;
+    const {intervalId} = get() as State;
     if (intervalId) {
       clearInterval(intervalId);
       set((state: State) => ({
         isPlaying: false,
-         isPaused: false,
-        cycles:0,
+        isPaused: false,
+        cycles: 0,
         displayedValue: { value: state.session.value, heading: "waiting" },
       }));
     }
   },
 
+
+
 }));
-
-
- 
