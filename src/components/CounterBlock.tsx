@@ -11,12 +11,10 @@ export default function CounterBlock() {
   const [sec, setSec] = useState(displayedValue.value % 60);
 
   useEffect(() => {
-    console.log("displayedValue", displayedValue);
     setMin(Math.floor(displayedValue.value / 60));
     setSec(displayedValue.value % 60);
   }, [displayedValue]);
 
-  console.log("displayedValue", displayedValue);
 
   return (
 (

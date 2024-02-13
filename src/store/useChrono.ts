@@ -11,11 +11,12 @@ const initialState: Partial<State> = {
     runningValue: 300,
   },
   isPlaying: false,
+  isPaused: false,
   intervalId: undefined,
   cycles: 0,
   displayedValue: {
     value: 1500,
-    heading: "work",
+    heading: "waiting",
   },
 };
 
@@ -68,34 +69,99 @@ export const useChrono = create((set, get) => ({
     });
   },
 
-  ///
-  //   tick: () => set((state: State) => ({ isPlaying: true })),
-
-  //   setupChrono: (payload: { intervalId: number }) =>
-  //     set((state: State) => ({
-  //       isPlaying: true,
-  //       intervalId: payload.intervalId,
-  //     })),
-
+  ////  startChrono : () => void;
   startChrono: () => {
     const isRunning = (get() as any).isPlaying;
+ 
     if (!isRunning) {
       const intervalId = setInterval(() => {
         set((state: State) => ({
           isPlaying: true,
-          displayedValue: { value: +state.displayedValue.value - 60 },
+          displayedValue: {
+            value: +state.displayedValue.value - 1,
+            heading: "work",
+          },
         }));
-        if((get()as any).displayedValue.value === 0){
+        if ((get() as any).displayedValue.value === 0) {
           clearInterval(intervalId);
+          const state = get() as State;
+         
+          set((state: State) => ({
+            cycles: state.cycles + 1,
+            isPlaying: false,
+            displayedValue: {
+              value: state.session.value,
+              heading: "waiting",
+              isRunning: false,
+            },
+            isPaused: true,
+          }));
+          state.startPause();
         }
       }, 1000);
-      set((state: State) => ({ ...state, intervalId: intervalId }));
-      set((state: State) => ({ ...state, isPlaying: true }));
+      set(() => ({ intervalId: intervalId }));
+      set((state: State) => ({
+        isPlaying: true,
+        displayedValue: { value: state.session.value, heading: "work" },
+      }));
     }
   },
 
+  ////  startPause : () => void;
+  startPause: () => {
+    const intervalId = setInterval(() => {
+      set((state: State) => ({
+        displayedValue: {
+          value: +state.displayedValue.value - 1,
+          heading: "paused",
+        },
+       isPaused: true,
+      }));
+       const state = get() as State;
+ 
 
+      /// fin de la pause 
+      if ((get() as any).displayedValue.value === 0) {
+        clearInterval(intervalId);
+        const state = get() as State;
+      
+        set((state: State) => ({
+           
+          isPlaying: false,
+          displayedValue: {
+            value: state.session.value,
+            heading: "waiting",
+            isRunning: false,
+          },
+        }));
+        state.startChrono();
+      }
+    }, 1000);
+    set(() => ({ intervalId: intervalId }));
+    set((state: State) => ({
+      displayedValue: {
+        value: state.pause.value,
+        heading: "paused",
+      },
+      isPaused: true,
+    }));
+  },
 
-
+  resetChrono: () => {
+    const state = get() as State;
+    const intervalId = state.intervalId;
+    if (intervalId) {
+      clearInterval(intervalId);
+      set((state: State) => ({
+        isPlaying: false,
+         isPaused: false,
+        cycles:0,
+        displayedValue: { value: state.session.value, heading: "waiting" },
+      }));
+    }
+  },
 
 }));
+
+
+ 
